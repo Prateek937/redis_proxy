@@ -54,21 +54,19 @@ const getClient = (host, next)  => {
 
 //app.get('/:host/:key', (req, res) => getClient(req.params.host).get(req.params.key).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)));
 app.post('/:host/get', (req, res) => {
-console.log(new Date(), `Requesting GET ${req.url}`);
-//validate host return error if not valid
-getClient(req.params.host, client => client.mGet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
+    console.log(new Date(), `Requesting GET ${req.url}`);
+    //validate host return error if not valid
+    getClient(req.params.host, client => client.mGet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
 });
 
 app.post('/:host/set', (req, res) => {
-console.log(new Date(), `Requesting PUT ${req.url}`);
-//validate host return error if not valid
-getClient(req.params.host, client => client.mSet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
+    console.log(new Date(), `Requesting PUT ${req.url}`);
+    //validate host return error if not valid
+    getClient(req.params.host, client => client.mSet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
 });
 app.post('/:host/stop',(req,res) => {
     console.log(new Date(), `Requesting DELETE ${req.url}`)
 //validate host return error if not valid
-//kill host 
-//res.send('ok')
     applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`] ,  (...a) => {
     console.log(new Date(), 'Service Redis Stopped', ...a)
     res.send('Service Redis Stopped')
