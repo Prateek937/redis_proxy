@@ -28,7 +28,8 @@ const createConnection = (host, next) => {
     const client = redis.createClient({
         socket: {
             host,
-            port: '6379'
+            port: '6379',
+            reconnectStrategy: retries => false
         }
     });
     process.on('exit', () => {
