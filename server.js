@@ -1,7 +1,7 @@
 const express = require('express');
 const redis = require('redis');
 const bodyParser = require('body-parser');
-const { spawn }    = require('child_process');
+const { spawn } = require('child_process');
 
 const app = express();
 const port = 4500;
@@ -39,17 +39,17 @@ const createConnection = (host, next) => {
         console.log(new Date(), `Connected to Redis ${host}`);
         next(client);
     });
-client.on('error', (err) => {
-    console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
-});
-client.connect();
+    client.on('error', (err) => {
+        console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
+    });
+    client.connect();
 };
 
-const getClient = (host, next)  => {
-((next) => {
-    if (host in clients) return next(clients[host]);
-    createConnection(host, next);
-})(client => next(clients[host] = client));
+const getClient = (host, next) => {
+    ((next) => {
+        if (host in clients) return next(clients[host]);
+        createConnection(host, next);
+    })(client => next(clients[host] = client));
 };
 
 //app.get('/:host/:key', (req, res) => getClient(req.params.host).get(req.params.key).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)));
@@ -61,23 +61,23 @@ app.post('/:host/get', (req, res) => {
 
 app.post('/:host/set', (req, res) => {
     //validate host return error if not valid
-    console.log(new Date(), `Requesting PUT ${req.url}`);
+    console.log(new Date(), `Requesting SET ${req.url}`);
     getClient(req.params.host, client => client.mSet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
 });
 
-app.post('/:host/stop',(req,res) => {
+app.post('/:host/stop', (req, res) => {
     //validate host return error if not valid
-    console.log(new Date(), `Requesting DELETE ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`] ,  (...a) => {
+    console.log(new Date(), `Requesting STOP ${req.url}`)
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`], (...a) => {
         console.log(new Date(), 'Service Redis Stopped', ...a)
         res.send('Service Redis Stopped')
     });
 });
 
-app.post('/:host/start',(req,res) => {
+app.post('/:host/start', (req, res) => {
     //validate host return error if not valid
     console.log(`Requesting START ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl start redis`] ,  (...a) => {
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl start redis`], (...a) => {
         console.log(new Date(), 'Service Redis Started', ...a)
         res.send('Service Redis Started')
     });
