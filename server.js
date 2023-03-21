@@ -48,6 +48,7 @@ const createConnection = (host, next) => {
 
 const getClient = (host, next) => {
     ((next) => {
+        console.log(client)
         if (host in clients) return next(clients[host]);
         createConnection(host, next);
     })(client => next(clients[host] = client));
