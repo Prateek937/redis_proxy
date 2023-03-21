@@ -48,10 +48,13 @@ const createConnection = (host, next) => {
 
 const getClient = (host, next) => {
     ((next) => {
-        console.log(client)
+        
         if (host in clients) return next(clients[host]);
         createConnection(host, next);
-    })(client => next(clients[host] = client));
+    })(client => {
+        console.log(clients[host]);
+        next(clients[host] = client)
+    });
 };
 
 //app.get('/:host/:key', (req, res) => getClient(req.params.host).get(req.params.key).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)));
