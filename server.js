@@ -29,7 +29,7 @@ const createConnection = (host, next) => {
         socket: {
             host,
             port: '6379',
-            reconnectStrategy: retries => false
+            reconnectStrategy: false
         }
     });
     process.on('exit', () => {
