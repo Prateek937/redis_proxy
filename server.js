@@ -41,6 +41,7 @@ const createConnection = (host, next) => {
         next(client);
     });
     client.on('error', (err) => {
+        delete clients[host];
         console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
     });
     client.connect();
