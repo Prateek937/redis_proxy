@@ -2,4 +2,4 @@
 git add .
 git commit -m 'update from aditya'
 git push origin master
-ssh -i bastion ec2-user@54.152.43.31 '~/redis_proxy/restart.sh'
+ssh -i bastion ec2-user@3.95.158.5 '~/redis_proxy/restart.sh'

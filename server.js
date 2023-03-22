@@ -7,6 +7,7 @@ const app = express();
 const port = 4500;
 
 const clients = {};
+const reconnectStrategy = false;
 
 app.use(bodyParser.json({
     strict: false // allow more than just arrays and options, but also scalar
@@ -29,7 +30,7 @@ const createConnection = (host, next) => {
         socket: {
             host,
             port: '6379',
-            reconnectStrategy: false
+            reconnectStrategy
         }
     });
     process.on('exit', () => {
@@ -41,7 +42,7 @@ const createConnection = (host, next) => {
         next(client);
     });
     client.on('error', (err) => {
-        delete clients[host];
+        if (reconnectStrategy !== true) delete clients[host];
         console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
     });
     client.connect();
