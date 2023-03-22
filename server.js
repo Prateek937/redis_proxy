@@ -70,7 +70,14 @@ app.post('/:host/get', (req, res) => {
 app.post('/:host/set', (req, res) => {
     //validate host return error if not valid
     console.log(new Date(), `Requesting SET ${req.url}`);
-    getClient(req.params.host, client => client.mSet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message)))
+    getClient(req.params.host, 
+        client => {
+            try {
+                client.mSet(req.body).then(reply => res.send(reply)).catch(err => res.status(400).send(err.message))
+            } catch (err) {
+                res.status(400).send(err.message);
+            }
+        })
 });
 
 app.post('/:host/stop', (req, res) => {
