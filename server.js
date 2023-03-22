@@ -26,6 +26,7 @@ const applyCommand = (command, args, next) => {
 };
 
 const createConnection = (host, next) => {
+    console.log(1);
     const client = redis.createClient({
         socket: {
             host,
@@ -42,15 +43,16 @@ const createConnection = (host, next) => {
         next(client);
     });
     client.on('error', (err) => {
+        console.log(3);
         if (reconnectStrategy !== true) delete clients[host];
         console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
     });
+    console.log(2);
     client.connect();
 };
 
 const getClient = (host, next) => {
     ((next) => {
-        
         if (host in clients) return next(clients[host]);
         createConnection(host, next);
     })(client => {
