@@ -44,7 +44,7 @@ const createConnection = (host, next) => {
     });
     client.on('error', (err) => {
         console.log(3);
-        if (reconnectStrategy !== true) delete clients[host];
+       // if (reconnectStrategy !== true) delete clients[host];
         console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
     });
     console.log(2);
