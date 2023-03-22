@@ -56,7 +56,6 @@ const getClient = (host, next) => {
         if (host in clients) return next(clients[host]);
         createConnection(host, next);
     })(client => {
-        console.log(client);
         next(clients[host] = client)
     });
 };
