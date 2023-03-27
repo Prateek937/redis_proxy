@@ -7,7 +7,6 @@ const app = express();
 const port = 4500;
 
 const clients = {};
-const reconnectStrategy = false;
 
 app.use(bodyParser.json({
     strict: false // allow more than just arrays and options, but also scalar
@@ -26,12 +25,10 @@ const applyCommand = (command, args, next) => {
 };
 
 const createConnection = (host, next) => {
-    console.log(1);
     const client = redis.createClient({
         socket: {
             host,
             port: '6379',
-            reconnectStrategy
         }
     });
     process.on('exit', () => {
@@ -43,11 +40,9 @@ const createConnection = (host, next) => {
         next(client);
     });
     client.on('error', (err) => {
-        console.log(3);
        // if (reconnectStrategy !== true) delete clients[host];
         console.log(new Date(), `Error using Redis ${host}: ${err.message}`);
     });
-    console.log(2);
     client.connect();
 };
 
@@ -83,17 +78,19 @@ app.post('/:host/set', (req, res) => {
 app.post('/:host/stop', (req, res) => {
     //validate host return error if not valid
     console.log(new Date(), `Requesting STOP ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`], (...a) => {
-        console.log(new Date(), 'Service Redis Stopped', ...a)
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`], (err) => {
+        if (err) return res.status(400).send(err.message);
+        console.log(new Date(), 'Service Redis Stopped')
         res.send('Service Redis Stopped')
     });
 });
 
 app.post('/:host/start', (req, res) => {
     //validate host return error if not valid
-    console.log(`Requesting START ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl start redis`], (...a) => {
-        console.log(new Date(), 'Service Redis Started', ...a)
+    console.log(new Date(), `Requesting START ${req.url}`)
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl start redis`], (err) => {
+        if (err) return res.status(400).send(err.message);
+        console.log(new Date(), 'Service Redis Started')
         res.send('Service Redis Started')
     });
 });
