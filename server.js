@@ -78,7 +78,7 @@ app.post('/:host/set', (req, res) => {
 app.post('/:host/stop', (req, res) => {
     //validate host return error if not valid
     console.log(new Date(), `Requesting STOP ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl stop redis`], (err) => {
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis_proxy/redis ec2-user@${req.params.host} sudo systemctl stop redis`], (err) => {
         if (err) return res.status(400).send(err.message);
         console.log(new Date(), 'Service Redis Stopped')
         res.send('Service Redis Stopped')
@@ -88,7 +88,7 @@ app.post('/:host/stop', (req, res) => {
 app.post('/:host/start', (req, res) => {
     //validate host return error if not valid
     console.log(new Date(), `Requesting START ${req.url}`)
-    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis ec2-user@${req.params.host} sudo systemctl start redis`], (err) => {
+    applyCommand('/bin/sh', ['-c', `ssh -i /home/ec2-user/redis_proxy/redis ec2-user@${req.params.host} sudo systemctl start redis`], (err) => {
         if (err) return res.status(400).send(err.message);
         console.log(new Date(), 'Service Redis Started')
         res.send('Service Redis Started')
